@@ -17,6 +17,8 @@ const SignUp = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    phoneNumber: '05452977503',
+    username: 'temporary'
   });
 
   const [errors, setErrors] = useState({});
@@ -37,7 +39,7 @@ const SignUp = () => {
       formErrors.email = 'Invalid email address'
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/
     if(!passwordRegex.test(formData.password)) {
       formErrors.password = 'Password must be at least 8 characters long, contain at least one uppercase letter, and one number'
     }

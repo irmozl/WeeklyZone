@@ -19,6 +19,7 @@ import dutyApi from './apis/dutyApi'
 import labelApi from './apis/labelApi'
 import teamApi from './apis/teamApi'
 import userApi from './apis/userApi'
+import authReducer from './features/auth/authSlice'
 
 const rootReducer = combineReducers({
   // api eklemesi
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   [labelApi.reducerPath]:labelApi.reducer,
   [teamApi.reducerPath]:teamApi.reducer,
   [userApi.reducerPath]:userApi.reducer,
+  auth: authReducer
 })
 
 const persistConfig = {
@@ -42,7 +44,7 @@ const persistConfig = {
     dutyApi.reducerPath,
     labelApi.reducerPath,
     teamApi.reducerPath,
-    userApi.reducerPath
+    userApi.reducerPath,
   ],
 }
 
@@ -57,7 +59,15 @@ const store = configureStore({
       },
     })
     // api eklemesi
-      .concat(projectApi.middleware, authApi.middleware,commentApi.middleware,dutyApi.middleware,labelApi.middleware,teamApi.middleware,userApi.middleware)
+      .concat([
+        projectApi.middleware, 
+        authApi.middleware,
+        commentApi.middleware,
+        dutyApi.middleware,
+        labelApi.middleware,
+        teamApi.middleware,
+        userApi.middleware
+      ])
 })
 
 const persistor = persistStore(store)

@@ -1,6 +1,6 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { HiOutlineBars3 } from "react-icons/hi2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import { MdHome } from "react-icons/md";
 import { MdNotifications } from "react-icons/md";
@@ -11,11 +11,16 @@ import { MdFolder } from "react-icons/md";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import { MdOutlineLogout } from "react-icons/md";
-import { IoCloseOutline } from "react-icons/io5";
+import { logout } from "./store/features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { selectAuthIsAuthenticated } from "./store/features/auth/authSelector";
 
 const Layout = () => {
   const [expanded, setExpanded] = useState(false);        
   const toggleSidebar = () => { setExpanded(!expanded) };
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const [open, setIsOpen] = useState(false);
   const toggleDropdown = () => { setIsOpen(!open) };
@@ -24,11 +29,28 @@ const Layout = () => {
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
   };
 
+  const handleLogout = () => {
+    console.log(44444)
+    dispatch(logout())
+    navigate("/")
+  }
+
   const [showPopUp, setShowPopUp] = useState(false);
   const handlePopUp = () => {setShowPopUp(!showPopUp);};
 
-    return (
-      <div className="h-screen flex flex-col font-inter" >
+  const isLoggedIn = useSelector(selectAuthIsAuthenticated)
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/"); 
+    }
+  }, [isLoggedIn, navigate]);
+
+  
+
+    
+  return (
+    <div className="h-screen flex flex-col font-inter" >
         <nav className=" bg-gray-100  h-20 flex flex-row justify-between items-center" >
           <img className=" h-11 w-11 rounded-sm ml-4 " src="car.jpg" alt="" />
           <div className="flex items-center gap-8">
@@ -49,7 +71,7 @@ const Layout = () => {
               </div>
               <div className=" flex flex-col items-start gap-4 border-t-2 border-gray-300 w-full">
                 <div></div>
-                <a href="/" className="hover:text-gray-400">Logout</a>
+                <p onClick={handleLogout} className="hover:text-gray-400 cursor-pointer">Logout</p>
               </div>
             </div>
           )}
@@ -166,9 +188,8 @@ const Layout = () => {
                     </li>
                     <hr class={`${expanded ? '' : ''}bg-gray-300 w-96 -ml-4 h-[3px]`} ></hr>
                     <li className={`flex justify-around items-center overflow-hidden mx-2 mb-2 py-2 pr-60 pl-2 rounded  `}>
-                     <NavLink to="/"><MdOutlineLogout className={` size-8`}/></NavLink>
-                     <NavLink to="/" className="pl-6">Logout</NavLink>
-                    </li>
+                     <div onClick={handleLogout} className="hover:text-gray-400 cursor-pointer"><MdOutlineLogout className={` size-8`}/></div>
+                     </li>
                 </ul>
                 </div>
               </div>
@@ -178,8 +199,9 @@ const Layout = () => {
           <Outlet />
         </div>
         
-      </div>
-    );
+    </div>
+  )
+    
   };
   
   export default Layout;

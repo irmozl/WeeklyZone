@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const dutyApi = createApi({
+  reducerPath: 'dutyApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://localhost:7159/api/v1/duty',
   }),

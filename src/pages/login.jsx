@@ -3,26 +3,58 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useLoginMutation } from '../store/apis/authApi.js'
+import { useDispatch, useSelector } from 'react-redux'
+import { login } from '../store/features/auth/authSlice.js'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => {setShowPassword(!showPassword)};
+  const[ loginApi, {isLoading,isError,isSuccess}] = useLoginMutation()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
+  const [errors, setErrors] = useState([])
+  const [success, setSuccess] = useState(false)
+  const dispatch = useDispatch()
+
+  // const [login, { isLoading }] = useLoginMutation()
+  // const {isLoading, error} = useSelector((state)=>state.user)
+
+  const getUserCredentials = () => {
+  const userCredentials = localStorage.getItem('userCredentials');
+  return userCredentials ? JSON.parse(userCredentials) : null;
+  };
 
   const handleLogin = (e) => {
     e.preventDefault()
-   
-    if (email === 'admin@gmail.com' && password === '0') {
-      navigate('/dashboard')
-    } else {
-      toast.error('Invalid username or password!', {
-        position: 'top-center', 
-        className: "",   //tailwind ile özelleştirebilirim burda 
-      })
-    }
+    let credentials={email, password}
+    loginApi(credentials)
+    .unwrap()
+    .then(res => {
+      setSuccess(true)
+      setErrors([])
+      dispatch(login(res.data))
+      navigate('/Dashboard')
+    })
+    .catch((error) => {
+      let errorMessages
+
+      if (error.data) {
+        if (!error.data.messages) {
+          errorMessages = Object.values(error.data.errors).flat()
+        } else {
+          errorMessages = error.data.messages.map(
+            (message) => message.description
+          )
+        }
+      } else {
+        errorMessages = ['Unexpected error occurred.']
+      }
+
+      setErrors(errorMessages)
+    })
   }
 
     return (
@@ -53,7 +85,10 @@ const Login = () => {
               <a href="/forgotPassword" className="font-bold text-sky-700 hover:text-sky-500" >Forgot Password</a>
              </div>
 
-             <button type='submit' className="w-full mb-3 font-semibold text-xl py-2 text-white bg-sky-700 hover:bg-sky-600 rounded-lg flex justify-center place-items-center">Sign Up</button>
+             <button type='submit' className="w-full mb-3 font-semibold text-xl py-2 text-white bg-sky-700 hover:bg-sky-600 rounded-lg flex justify-center place-items-center" > 
+                {/* tagın içine disabled=isloading gibi bi şey yazılıyo */}
+                Sign In            
+              </button>
           
           </form>
           

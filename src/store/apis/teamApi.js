@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const teamApi = createApi({
+  reducerPath: 'teamApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://localhost:7159/api/v1/Team',
   }),
